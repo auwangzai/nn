@@ -7,7 +7,7 @@ import math
 def main():
     # 加载模型
     try:
-        model = mujoco.MjModel.from_xml_path(r"D:\study\nn\src\mujoco_hci_sim\humanoid.xml")
+        model = mujoco.MjModel.from_xml_path("humanoid.xml")
     except Exception as e:
         print(f"模型加载失败: {e}")
         return
