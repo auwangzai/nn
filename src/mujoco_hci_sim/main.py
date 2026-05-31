@@ -29,7 +29,7 @@ else:
         learning_rate=3e-4, gamma=0.99, clip_range=0.2,
         n_steps=2048, batch_size=64, n_epochs=10
     )
-    model.learn(total_timesteps=1_000_000)
+    model.learn(total_timesteps=3_000_000)
     model.save(MODEL_PATH)
     print("训练完成，模型已保存！")
 
