@@ -1,31 +1,49 @@
-import time
 import mujoco
-from mujoco import viewer
+import mujoco.viewer as viewer
+import numpy as np
+import os
 
 def main():
-    # 模型路径（和文件同目录，直接写文件名）
-    model_path = "d:/study/nn/src/muscle_humanoid/humanoid.xml"
-
-    # 加载模型
-    model = mujoco.MjModel.from_xml_path(model_path)
+    xml_path = os.path.join(os.path.dirname(__file__), "humanoid.xml")
+    model = mujoco.MjModel.from_xml_path(xml_path)
     data = mujoco.MjData(model)
 
-    # 只设置初始高度，不设置任何关节姿态，避免维度不匹配
-    data.qpos[2] = 1.3
+    # 固定模型坐标，锁定在画面中心
+    data.qpos[0] = 0.0
+    data.qpos[1] = 0.0
+    data.qpos[2] = 1.0
+    data.qpos[3] = 0.0
+    data.qpos[4] = 0.0
+    data.qpos[5] = 0.0
 
-    print("✅ 启动成功！")
+    time = 0.0
+    swing_freq = 0.15
+    body_amp = 0.07   # 身体俯仰（走路）
+    arm_amp = 0.06    # 左右转动（模拟摆手）
 
-    with viewer.launch_passive(model, data) as v:
-        # 自动调好视角
-        v.cam.distance = 4
-        v.cam.elevation = -20
-        v.cam.azimuth = 120
+    v = viewer.launch_passive(model, data)
+    # 相机居中对准模型，画面观感舒适
+    v.cam.distance = 3.2
+    v.cam.elevation = -15
+    v.cam.azimuth = 90
+    v.cam.lookat[:] = [0, 0, 0.8]  # 镜头焦点精准落在模型中心
 
-        # 物理循环
-        while v.is_running():
-            mujoco.mj_step(model, data)
-            v.sync()
-            time.sleep(0.005)
+    while v.is_running():
+        time += model.opt.timestep
+        phase = np.sin(2 * np.pi * swing_freq * time)
+
+        # 走路+摆臂动作
+        data.qpos[3] = body_amp * phase
+        data.qpos[5] = arm_amp * phase
+
+        # 强制锁死位置，保证始终在中间
+        data.qpos[0] = 0.0
+        data.qpos[1] = 0.0
+        data.qpos[2] = 1.0
+        data.qpos[4] = 0.0
+
+        mujoco.mj_forward(model, data)
+        v.sync()
 
 if __name__ == "__main__":
     main()
