@@ -78,7 +78,10 @@ title: 主页
 
 [__人形机器人站立行走__](./mujoco_man/mujoco_manrun.md) -  基于 CPG + PD 的人形机器人稳定站立与行走仿真（MuJoCo）
 
+
 [__setup_tool模块汇报文档__](./setup_tool/report.md) - setup_tool 模块背景、改进内容、运行方式与效果总结
+
+[__人形机器人自主行走__](./mujoco_hci_sim/README.md) - 基于PPO强化学习的Humanoid人形机器人自主行走仿真
 
 ## 规划 <span id="planning"></span>
 
